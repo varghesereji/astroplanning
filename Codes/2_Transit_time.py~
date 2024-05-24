@@ -1,0 +1,44 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+from astropy.coordinates import SkyCoord
+from astropy.time import Time
+from astroplan import FixedTarget
+from astroplan.plots import plot_airmass, plot_altitude, plot_sky
+
+import astropy.units as u
+from astropy.coordinates import EarthLocation
+from pytz import timezone
+from astroplan import Observer
+
+from astroplan import EclipsingSystem
+
+# Setting up location
+longitude = '+79d41m04s'
+latitude = '+29d21m40s'
+elevation = 2424 * u.m
+location = EarthLocation.from_geodetic(longitude, latitude, elevation)
+
+observer = Observer(name='Devasthal Optical Telescope',
+                    location=location,
+                    relative_humidity=0.6,
+                    temperature=10 * u.deg_C,
+                    timezone=timezone('Asia/Kolkata'),
+                    description='3.6m DOT, Nainithal')
+
+# Transit properties.
+tr_midpoint = 2459443.47179 * u.day
+
+orbital_period = 1.630757 * u.day 
+eclipse_duration = 0.0583 * u.day
+
+primary_eclipse_time = Time(tr_midpoint, format='jd')
+
+toi5205 = EclipsingSystem(primary_eclipse_time=primary_eclipse_time,
+                          orbital_period=orbital_period, duration=eclipse_duration, name='TOI-5205 b')
+
+Observing_time = Time('2023-11-26 21:30')
+next_transit = toi5205.next_primary_eclipse_time(Observing_time, n_eclipses=10)
+for f in next_transit:
+    print(f)
+#print(next_transit)
